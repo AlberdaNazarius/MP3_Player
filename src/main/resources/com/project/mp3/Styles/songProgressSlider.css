@@ -1,0 +1,19 @@
+.jfx-slider-style {
+
+}
+
+// This make some aesthetic bug
+.jfx-slider-style .thumb{
+    -fx-pref-height: 0px;
+    -fx-pref-width: 0px;
+}
+
+.jfx-slider-style .track{
+    -fx-pref-height: 4px;
+    -fx-pref-width: 4px;
+}
+
+.jfx-slider-style .animated-thumb{
+	-fx-background-color: transparent;
+	-fx-background-text: none;
+}

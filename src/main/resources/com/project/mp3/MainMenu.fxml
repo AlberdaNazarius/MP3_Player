@@ -1,16 +1,102 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.jfoenix.controls.JFXListView?>
+<?import com.jfoenix.controls.JFXSlider?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.VBox?>
-
 <?import javafx.scene.control.Button?>
-<VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.project.mp3.Controller">
-    <padding>
-        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
-    </padding>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
 
-    <Label fx:id="welcomeText"/>
-    <Button text="Hello!" onAction="#onHelloButtonClick"/>
-</VBox>
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="602.0" prefWidth="834.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.project.mp3.MP3_Controller">
+    <children>
+        <ScrollPane fx:id="scrollPane" hbarPolicy="NEVER" layoutX="121.0" prefHeight="557.0" prefWidth="715.0" vbarPolicy="ALWAYS" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="121.0" AnchorPane.rightAnchor="-2.0" AnchorPane.topAnchor="0.0">
+            <content>
+                <JFXListView fx:id="songsListView" depth="1" fixedCellSize="45.0" prefHeight="500.0" prefWidth="701.0" style="-fx-background-color: grey;" verticalGap="20.0">
+                    <opaqueInsets>
+                        <Insets />
+                    </opaqueInsets>
+                </JFXListView>
+            </content>
+        </ScrollPane>
+        <AnchorPane fx:id="bottomAnchorPane" layoutY="479.0" prefHeight="101.0" prefWidth="834.0" style="-fx-background-color: black;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+            <children>
+                <BorderPane fx:id="ddd" prefHeight="101.0" prefWidth="834.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <right>
+                        <Pane prefHeight="101.0" prefWidth="145.0" BorderPane.alignment="BOTTOM_RIGHT">
+                            <children>
+                                <JFXSlider fx:id="volumeSlider" layoutX="29.0" layoutY="51.0" prefHeight="14.0" prefWidth="102.0" value="15.0">
+                                    <padding>
+                                        <Insets right="10.0" />
+                                    </padding>
+                                </JFXSlider>
+                            </children>
+                        </Pane>
+                    </right>
+                    <left>
+                        <Pane fx:id="leftPane" maxWidth="250.0" minHeight="100.0" minWidth="200.0" prefHeight="101.0" prefWidth="218.0" BorderPane.alignment="BOTTOM_LEFT">
+                            <children>
+                                <ImageView fitHeight="58.0" fitWidth="87.0" layoutX="7.0" layoutY="29.0" pickOnBounds="true" preserveRatio="true" scaleX="0.85">
+                                    <image>
+                                        <Image url="@images/images.jpg" />
+                                    </image>
+                                </ImageView>
+                                <Label fx:id="songLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="90.0" layoutY="20.0" prefHeight="45.0" prefWidth="90.0" text="Music" textFill="#dddddd">
+                                    <font>
+                                        <Font name="System Bold" size="20.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                        </Pane>
+                    </left>
+                    <center>
+                        <Pane maxHeight="101.0" maxWidth="600.0" prefHeight="101.0" prefWidth="445.0" BorderPane.alignment="CENTER">
+                            <children>
+                                <JFXSlider fx:id="songProgressSlider" blockIncrement="1.0" layoutX="39.0" layoutY="73.0" prefHeight="14.0" prefWidth="381.0" styleClass="jfx-slider-style" stylesheets="@Styles/songProgressSlider.css" value="-1.0" />
+                                <Button fx:id="playButton" layoutX="201.0" layoutY="26.0" mnemonicParsing="false" onAction="#playMediaButton" prefHeight="38.0" prefWidth="39.0" style="-fx-background-radius: 100;" textFill="#b91818">
+                                    <graphic>
+                                        <ImageView fx:id="pauseButtonImage" disable="true" fitHeight="22.0" fitWidth="17.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                                            <image>
+                                                <Image url="@images/pauseButtonImage.png" />
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+                                </Button>
+                                <ImageView fx:id="playButtonImage" disable="true" fitHeight="20.0" fitWidth="20.0" layoutX="216.0" layoutY="35.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="@images/playButtonImage.png" />
+                                    </image>
+                                </ImageView>
+                                <Button fx:id="nextMediaButton" layoutX="267.0" layoutY="25.0" mnemonicParsing="false" onAction="#nextMedia" prefHeight="37.0" prefWidth="38.0" style="-fx-background-radius: 100;">
+                                    <graphic>
+                                        <ImageView fitHeight="28.0" fitWidth="19.0" pickOnBounds="true" preserveRatio="true">
+                                            <image>
+                                                <Image url="@images/nextButtonImage.png" />
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+                                </Button>
+                                <Button fx:id="previousMediaButton" layoutX="136.0" layoutY="27.0" mnemonicParsing="false" onAction="#previousMedia" prefHeight="37.0" prefWidth="38.0" style="-fx-background-radius: 100;">
+                                    <graphic>
+                                        <ImageView fitHeight="28.0" fitWidth="19.0" pickOnBounds="true" preserveRatio="true">
+                                            <image>
+                                                <Image url="@images/previousButtonImage.png" />
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+                                </Button>
+                                <Label fx:id="currentTimeLabel" layoutX="4.0" layoutY="72.0" text="0:00" textFill="#dddddd" />
+                                <Label fx:id="endTimeLabel" layoutX="430.0" layoutY="72.0" text="0:00" textFill="#dddddd" />
+                            </children>
+                        </Pane>
+                    </center>
+                </BorderPane>
+            </children>
+        </AnchorPane>
+    </children>
+</AnchorPane>
