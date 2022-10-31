@@ -8,8 +8,10 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.stage.FileChooser;
 import javafx.util.Callback;
 import javafx.util.Duration;
 
@@ -32,6 +34,8 @@ public class MP3_Controller implements Initializable {
     private ScrollPane scrollPane;
     @FXML
     private ImageView playButtonImage, pauseButtonImage;
+    @FXML
+    private VBox playlistsBox;
 
 
     private Media media;
@@ -40,19 +44,27 @@ public class MP3_Controller implements Initializable {
 
     private File[] files;
     private File directory;
+
     private ArrayList<Song> songs; // It's  like playlist
+    private ArrayList<Playlist> playlists;
+    private int selectedPlaylist;
 
     private Timer timer;
-    private TimerTask timerTask;
     private double currentSongTime;
     private boolean playing;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         songs = new ArrayList<Song>();
-        directory = new File("D:\\Work\\Univercity\\Term3\\CPP\\TermPaper\\src\\main\\resources\\project\\main\\music\\");
+        directory = new File("D:\\Work\\Univercity\\Term3\\CPP\\MP3\\src\\main\\resources\\com\\project\\mp3\\music");
         files = directory.listFiles();
 
+        playlists = new ArrayList<>();
+        Playlist.setPlaylistsBox(playlistsBox);
+        playlists.add(new Playlist("Road To Home"));
+        playlists.add(new Playlist("Evening"));
+
+        // !!!!!!!!! new method
         if (files != null){
             for (var item : files)
                 songs.add(new Song(item));
@@ -139,6 +151,24 @@ public class MP3_Controller implements Initializable {
                 songIndex = songs.indexOf(currentSong);
             }
         });
+    }
+
+    public void createPlaylist(String name){
+        playlists.add(new Playlist(name));
+
+    }
+
+    public void addSong(){
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Music Files", "*.mp3")
+        );
+
+        var files = fileChooser.showOpenMultipleDialog(null);
+        if (files != null){
+            for (var item : files)
+                playlists.get(selectedPlaylist).addSong(new Song(item));
+        }
     }
 
     private void playMedia(){
@@ -249,8 +279,8 @@ public class MP3_Controller implements Initializable {
 
     private void beginTimer(){
         timer = new Timer();
-        timerTask = new TimerTask(){
-            public void run(){
+        TimerTask timerTask = new TimerTask() {
+            public void run() {
                 double current = mediaPlayer.getCurrentTime().toSeconds();
                 songProgressSlider.setValue(current);
             }
