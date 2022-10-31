@@ -1,5 +1,6 @@
 package com.project.mp3;
 
+import com.jfoenix.controls.JFXListView;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
@@ -29,7 +30,7 @@ public class MP3_Controller implements Initializable {
     @FXML
     private Slider volumeSlider, songProgressSlider;
     @FXML
-    private ListView<Song> songsListView;
+    private JFXListView<Song> songsListView;
     @FXML
     private ScrollPane scrollPane;
     @FXML
@@ -42,12 +43,8 @@ public class MP3_Controller implements Initializable {
     private MediaPlayer mediaPlayer;
     private int songIndex;
 
-    private File[] files;
-    private File directory;
-
-    private ArrayList<Song> songs; // It's  like playlist
-    private ArrayList<Playlist> playlists;
-    private int selectedPlaylist;
+    public static ArrayList<Playlist> playlists;
+    public static int selectedPlaylist;
 
     private Timer timer;
     private double currentSongTime;
@@ -55,37 +52,36 @@ public class MP3_Controller implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        songs = new ArrayList<Song>();
-        directory = new File("D:\\Work\\Univercity\\Term3\\CPP\\MP3\\src\\main\\resources\\com\\project\\mp3\\music");
-        files = directory.listFiles();
+        File directory = new File("D:\\Work\\Univercity\\Term3\\CPP\\MP3\\src\\main\\resources\\com\\project\\mp3\\music");
+        File[] files = directory.listFiles();
 
         playlists = new ArrayList<>();
         Playlist.setPlaylistsBox(playlistsBox);
+        Playlist.setSongsListView(songsListView);
         playlists.add(new Playlist("Road To Home"));
         playlists.add(new Playlist("Evening"));
 
-        // !!!!!!!!! new method
-        if (files != null){
-            for (var item : files)
-                songs.add(new Song(item));
-            for (var song : songs)
-                songsListView.getItems().add(song);
-        }
+        if (files != null)
+            playlists.get(0).addSong(new Song(files[0]));
+        // Also initialize mediaPlayer!
         changeSong();
 
         // Set customs items in songListView
         songsListView.setCellFactory(new Callback<ListView<Song>, ListCell<Song>>() {
             @Override
             public ListCell<Song> call(ListView<Song> songListView) {
+
                 final ListCell<Song> cell = new ListCell<Song>() {
                     @Override
-                        public void updateItem(Song item, boolean empty) {
+                    public void updateItem(Song item, boolean empty) {
                         super.updateItem(item, empty);
-                        if (item != null) {
-                                setText(item.getName());
-                        }
+                        if (item != null)
+                            setText(item.getName());
+                        else
+                            setText("");
                     }
                 };
+
                 cell.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
                     if (event.getClickCount() == 2 && (! cell.isEmpty())) {
                         Song item = cell.getItem();
@@ -121,13 +117,13 @@ public class MP3_Controller implements Initializable {
         });
 
         //Used to set the value for progressSlider to run through whole song
-        mediaPlayer.setOnReady(new Runnable() {
-            @Override
-            public void run() {
-                Duration total = media.getDuration();
-                songProgressSlider.setMax(total.toSeconds());
-            }
-        });
+       mediaPlayer.setOnReady(new Runnable() {
+           @Override
+           public void run() {
+               Duration total = media.getDuration();
+               songProgressSlider.setMax(total.toSeconds());
+           }
+       });
 
         // Makes songsListView fit size of scrollPane
         scrollPane.heightProperty().addListener(new ChangeListener<Number>() {
@@ -148,12 +144,14 @@ public class MP3_Controller implements Initializable {
             @Override
             public void changed(ObservableValue observableValue, Object o, Object selectedSong) {
                 var currentSong = (Song)selectedSong;
-                songIndex = songs.indexOf(currentSong);
+                songIndex = playlists.get(selectedPlaylist).getAllSongs().indexOf(currentSong);
             }
         });
+
+
     }
 
-    public void createPlaylist(String name){
+    public void createPlaylist(String name){ //// Make
         playlists.add(new Playlist(name));
 
     }
@@ -169,6 +167,13 @@ public class MP3_Controller implements Initializable {
             for (var item : files)
                 playlists.get(selectedPlaylist).addSong(new Song(item));
         }
+        refreshSongsListView();
+    }
+
+    public void refreshSongsListView(){
+        songsListView.getItems().clear();
+        for (var song : playlists.get(selectedPlaylist).getAllSongs())
+            songsListView.getItems().add(song);
     }
 
     private void playMedia(){
@@ -209,10 +214,10 @@ public class MP3_Controller implements Initializable {
 
     private void changeSong(){
         //Load song
-        media = new Media(songs.get(songIndex).getURI());
+        media = new Media(playlists.get(selectedPlaylist).getSongByIndex(songIndex).getURI());
         mediaPlayer = new MediaPlayer(media);
         //Change song label
-        songLabel.setText(songs.get(songIndex).getName());
+        songLabel.setText(playlists.get(selectedPlaylist).getSongByIndex(songIndex).getName());
         //Add listener to check changing of the time
         mediaPlayer.currentTimeProperty().addListener(new ChangeListener<Duration>() {
             @Override
@@ -271,7 +276,7 @@ public class MP3_Controller implements Initializable {
     }
 
     public void nextMedia(){
-        if (songs.size()-1 > songIndex){
+        if (playlists.get(selectedPlaylist).getSize()-1 > songIndex){
             songIndex++;
             playNewSong();
         }
