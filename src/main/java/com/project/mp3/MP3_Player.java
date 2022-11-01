@@ -1,5 +1,6 @@
 package com.project.mp3;
 
+import com.project.mp3.events.SongEvent;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;

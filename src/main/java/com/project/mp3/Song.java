@@ -12,6 +12,7 @@ public class Song {
     private final File location;
 
     private String name;
+    private String style;
 
     public Song(File location) {
         this.location = location;
@@ -46,4 +47,11 @@ public class Song {
         return location.toURI().toString();
     }
 
+    public String getStyle() {
+        return style;
+    }
+
+    public void setStyle(String style) {
+        this.style = style;
+    }
 }

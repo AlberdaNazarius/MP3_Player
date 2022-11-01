@@ -1,12 +1,14 @@
 package com.project.mp3;
 
 import com.jfoenix.controls.JFXListView;
+import com.project.mp3.events.SongEvent;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.event.EventHandler;
+import javafx.event.*;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.control.skin.VirtualFlow;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
@@ -18,10 +20,7 @@ import javafx.util.Duration;
 
 import java.io.File;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.ResourceBundle;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 public class MP3_Controller implements Initializable {
 
@@ -42,6 +41,14 @@ public class MP3_Controller implements Initializable {
     private Media media;
     private MediaPlayer mediaPlayer;
     private int songIndex;
+    private int selectedMusicInSongsListView;
+
+    private Cell<Song> selectedCell;
+    private Cell<Song> previousCell;
+
+
+    public Song previousSong;
+    public Song selectedSong;
 
     public static ArrayList<Playlist> playlists;
     public static int selectedPlaylist;
@@ -58,39 +65,77 @@ public class MP3_Controller implements Initializable {
         playlists = new ArrayList<>();
         Playlist.setPlaylistsBox(playlistsBox);
         Playlist.setSongsListView(songsListView);
+        // Add some test playlists
         playlists.add(new Playlist("Road To Home"));
         playlists.add(new Playlist("Evening"));
 
-        if (files != null)
-            playlists.get(0).addSong(new Song(files[0]));
-        // Also initialize mediaPlayer!
-        changeSong();
+        playlists.get(0).addSong(new Song(files[0]));
+        playlists.get(0).addSong(new Song(files[1]));
+        playlists.get(0).addSong(new Song(files[0]));
+
+        playlists.get(0).getSongByIndex(0).setStyle("-fx-background-color: green; -fx-text-fill: black");
+
+        changeSong(); // It also initializes mediaPlayer
+        refreshSongsListView();
 
         // Set customs items in songListView
         songsListView.setCellFactory(new Callback<ListView<Song>, ListCell<Song>>() {
             @Override
             public ListCell<Song> call(ListView<Song> songListView) {
-
-                final ListCell<Song> cell = new ListCell<Song>() {
+                final ListCell<Song> cell = new ListCell<Song>()
+                {
                     @Override
                     public void updateItem(Song item, boolean empty) {
                         super.updateItem(item, empty);
-                        if (item != null)
+                        if (item != null) {
                             setText(item.getName());
-                        else
+                            setStyle(item.getStyle());
+                        }
+                        else{
                             setText("");
+                            setStyle("-fx-text-fill: black");
+                        }
+
                     }
                 };
 
                 cell.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
                     if (event.getClickCount() == 2 && (! cell.isEmpty())) {
-                        Song item = cell.getItem();
+                       if (selectedCell != null){
+                           previousCell = selectedCell;
+                       }
+                       else{
+                           previousCell = getListCell(songsListView, songIndex);
+                       }
+
+                        assert previousCell != null;
+                        previousCell.setStyle("-fx-text-fill: black");
+
+                        selectedCell = cell;
+                        selectedCell.setStyle("-fx-background-color: green; -fx-text-fill: black");
+                        selectedSong.setStyle("-fx-background-color: green; -fx-text-fill: black");
+
+                        if (previousSong != null)
+                            previousSong.setStyle("-fx-text-fill: black");
+                        selectedSong.setStyle("-fx-background-color: green; -fx-text-fill: black");
+
+                        songIndex = selectedMusicInSongsListView;
                         playNewSong();
                     }
                 });
-                return cell;
+
+               cell.addEventFilter(SongEvent.SONG_CHANGED, songEvent -> {
+                    previousCell.setStyle("-fx-text-fill: black");
+                    selectedCell.setStyle("-fx-background-color: green; -fx-text-fill: black");
+                    selectedSong.setStyle("-fx-background-color: green; -fx-text-fill: black");
+
+                    previousSong.setStyle("-fx-text-fill: black");
+                    selectedSong.setStyle("-fx-background-color: green; -fx-text-fill: black");
+               });
+
+               return cell;
             }
-            });
+        });
 
         //Changes song volume
         volumeSlider.valueProperty().addListener(new ChangeListener<Number>() {
@@ -144,11 +189,28 @@ public class MP3_Controller implements Initializable {
             @Override
             public void changed(ObservableValue observableValue, Object o, Object selectedSong) {
                 var currentSong = (Song)selectedSong;
-                songIndex = playlists.get(selectedPlaylist).getAllSongs().indexOf(currentSong);
+                selectedMusicInSongsListView = playlists.get(selectedPlaylist).getAllSongs().indexOf(currentSong);
             }
         });
+    }
 
+    private ListCell<Song> getListCell(JFXListView<Song> listView, int cellIndex) {
+        if (cellIndex == -1) {
+            return null;
+        }
+        //Virtual Flow is the container of all list cells
+        //Each ListView has exactly one VirtualFlow which we are searching for
+        Optional<VirtualFlow> virtualFlowOptional = listView.getChildrenUnmodifiable()
+                .stream()
+                .filter(node -> node instanceof VirtualFlow)
+                .map(n -> (VirtualFlow) n)
+                .findFirst();
+        if (virtualFlowOptional.isEmpty()) {
+            return null;
+        }
+        VirtualFlow<ListCell<Song>> virtualFlow = virtualFlowOptional.get();
 
+        return virtualFlow.getCell(cellIndex);
     }
 
     public void createPlaylist(String name){ //// Make
@@ -171,6 +233,8 @@ public class MP3_Controller implements Initializable {
     }
 
     public void refreshSongsListView(){
+        if (songsListView.getItems() == null)
+            return;
         songsListView.getItems().clear();
         for (var song : playlists.get(selectedPlaylist).getAllSongs())
             songsListView.getItems().add(song);
@@ -231,6 +295,18 @@ public class MP3_Controller implements Initializable {
         });
         // Changes selected song in songsListView
         songsListView.getSelectionModel().select(songIndex);
+
+        previousCell = selectedCell;
+        if (previousCell == null)
+            previousCell = getListCell(songsListView, songIndex-1);
+        selectedCell = getListCell(songsListView, songIndex);
+
+        previousSong = selectedSong;
+        selectedSong = playlists.get(selectedPlaylist).getSongByIndex(songIndex);
+
+        // Fire changed song event
+        if (selectedCell != null)
+            Event.fireEvent(selectedCell, new SongEvent(SongEvent.SONG_CHANGED));
     }
 
     private void displayCurrentTime(){

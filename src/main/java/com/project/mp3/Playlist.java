@@ -20,7 +20,6 @@ public class Playlist {
 
     private static VBox playlistsBox;
     private static JFXListView<Song> songsListView;
-    //private static
     private final JFXButton playlistButton;
 
 
@@ -42,7 +41,7 @@ public class Playlist {
 
                 MP3_Controller.selectedPlaylist = id;
                 playlistButton.setStyle("-fx-text-fill: green");
-
+                // refreshes songsListView
                 songsListView.getItems().clear();
                 for (var song : songs)
                     songsListView.getItems().add(song);

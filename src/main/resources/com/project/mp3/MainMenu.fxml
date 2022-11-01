@@ -20,7 +20,7 @@
     <children>
         <ScrollPane fx:id="scrollPane" hbarPolicy="NEVER" layoutX="157.0" prefHeight="502.0" prefWidth="679.0" vbarPolicy="ALWAYS" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="157.0" AnchorPane.rightAnchor="-2.0" AnchorPane.topAnchor="0.0">
             <content>
-                <JFXListView fx:id="songsListView" depth="1" fixedCellSize="45.0" prefHeight="500.0" prefWidth="701.0" style="-fx-background-color: grey;" verticalGap="20.0">
+                <JFXListView fx:id="songsListView" depth="1" fixedCellSize="40.0" prefHeight="500.0" prefWidth="701.0" style="-fx-background-color: grey;" verticalGap="20.0">
                     <opaqueInsets>
                         <Insets />
                     </opaqueInsets>
@@ -60,7 +60,7 @@
                     <center>
                         <Pane maxHeight="101.0" maxWidth="600.0" prefHeight="101.0" prefWidth="445.0" BorderPane.alignment="CENTER">
                             <children>
-                                <JFXSlider fx:id="songProgressSlider" blockIncrement="1.0" layoutX="39.0" layoutY="73.0" prefHeight="14.0" prefWidth="381.0" styleClass="jfx-slider-style" stylesheets="@Styles/songProgressSlider.css" value="-1.0" />
+                                <JFXSlider fx:id="songProgressSlider" blockIncrement="1.0" layoutX="39.0" layoutY="73.0" prefHeight="14.0" prefWidth="381.0" styleClass="jfx-slider-style" stylesheets="@styles/songProgressSlider.css" value="-1.0" />
                                 <Button fx:id="playButton" layoutX="201.0" layoutY="26.0" mnemonicParsing="false" onAction="#playMediaButton" prefHeight="38.0" prefWidth="39.0" style="-fx-background-radius: 100;" textFill="#b91818">
                                     <graphic>
                                         <ImageView fx:id="pauseButtonImage" disable="true" fitHeight="22.0" fitWidth="17.0" pickOnBounds="true" preserveRatio="true" visible="false">
