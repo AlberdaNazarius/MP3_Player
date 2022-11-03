@@ -40,12 +40,12 @@ public class MP3_Controller implements Initializable {
 
     private Media media;
     private MediaPlayer mediaPlayer;
+
     private int songIndex;
     private int selectedMusicInSongsListView;
 
     private Cell<Song> selectedCell;
     private Cell<Song> previousCell;
-
 
     public Song previousSong;
     public Song selectedSong;
@@ -125,12 +125,10 @@ public class MP3_Controller implements Initializable {
                 });
 
                cell.addEventFilter(SongEvent.SONG_CHANGED, songEvent -> {
-                    previousCell.setStyle("-fx-text-fill: black");
-                    selectedCell.setStyle("-fx-background-color: green; -fx-text-fill: black");
-                    selectedSong.setStyle("-fx-background-color: green; -fx-text-fill: black");
-
                     previousSong.setStyle("-fx-text-fill: black");
                     selectedSong.setStyle("-fx-background-color: green; -fx-text-fill: black");
+
+                    refreshSongsListView();
                });
 
                return cell;
@@ -145,7 +143,7 @@ public class MP3_Controller implements Initializable {
             }
         });
 
-        //Changes music time after some actions
+        // Changes music time after some actions
         songProgressSlider.setOnMousePressed(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
@@ -161,14 +159,14 @@ public class MP3_Controller implements Initializable {
             }
         });
 
-        //Used to set the value for progressSlider to run through whole song
-       mediaPlayer.setOnReady(new Runnable() {
-           @Override
-           public void run() {
-               Duration total = media.getDuration();
-               songProgressSlider.setMax(total.toSeconds());
-           }
-       });
+        // Is used to set the value for progressSlider to run through whole song
+        mediaPlayer.setOnReady(new Runnable() {
+            @Override
+            public void run() {
+                Duration total = media.getDuration();
+                songProgressSlider.setMax(total.toSeconds());
+            }
+        });
 
         // Makes songsListView fit size of scrollPane
         scrollPane.heightProperty().addListener(new ChangeListener<Number>() {
@@ -282,6 +280,16 @@ public class MP3_Controller implements Initializable {
         mediaPlayer = new MediaPlayer(media);
         //Change song label
         songLabel.setText(playlists.get(selectedPlaylist).getSongByIndex(songIndex).getName());
+
+        //Is Used to set the value for progressSlider to run through whole song
+        mediaPlayer.setOnReady(new Runnable() {
+            @Override
+            public void run() {
+                Duration total = media.getDuration();
+                songProgressSlider.setMax(total.toSeconds());
+            }
+        });
+
         //Add listener to check changing of the time
         mediaPlayer.currentTimeProperty().addListener(new ChangeListener<Duration>() {
             @Override
@@ -293,9 +301,11 @@ public class MP3_Controller implements Initializable {
                     nextMedia();
             }
         });
+
         // Changes selected song in songsListView
         songsListView.getSelectionModel().select(songIndex);
 
+        // Mostly used to change the color of current playing song
         previousCell = selectedCell;
         if (previousCell == null)
             previousCell = getListCell(songsListView, songIndex-1);
@@ -324,10 +334,10 @@ public class MP3_Controller implements Initializable {
             seconds -= 60;
             minutes++;
         }
-        if (seconds > 9)
+        if ((int)seconds > 9)
             endTimeLabel.setText(String.format("%x:%s", minutes, Integer.toString((int)seconds)));
         else
-            currentTimeLabel.setText(String.format("%x:0%s", minutes, Integer.toString((int)seconds)));
+            endTimeLabel.setText(String.format("%x:0%s", minutes, Integer.toString((int)seconds)));
     }
 
     public void playNewSong(){
