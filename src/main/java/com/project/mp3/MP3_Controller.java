@@ -2,19 +2,24 @@ package com.project.mp3;
 
 import com.jfoenix.controls.JFXListView;
 import com.project.mp3.events.SongEvent;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.*;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.skin.VirtualFlow;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.Duration;
 
@@ -33,9 +38,13 @@ public class MP3_Controller implements Initializable {
     @FXML
     private ScrollPane scrollPane;
     @FXML
-    private ImageView playButtonImage, pauseButtonImage;
+    private ImageView playButtonImage, pauseButtonImage, restoreDownImage, maximizeImage;
     @FXML
     private VBox playlistsBox;
+    @FXML
+    private Pane TopPane;
+    @FXML
+    private Button maximizeButton, minimizeButton, restoreDownButton;
 
 
     private Media media;
@@ -57,6 +66,9 @@ public class MP3_Controller implements Initializable {
     private double currentSongTime;
     private boolean playing;
 
+    private double initialX;
+    private double initialY;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         File directory = new File("D:\\Work\\Univercity\\Term3\\CPP\\MP3\\src\\main\\resources\\com\\project\\mp3\\music");
@@ -65,6 +77,7 @@ public class MP3_Controller implements Initializable {
         playlists = new ArrayList<>();
         Playlist.setPlaylistsBox(playlistsBox);
         Playlist.setSongsListView(songsListView);
+
         // Add some test playlists
         playlists.add(new Playlist("Road To Home"));
         playlists.add(new Playlist("Evening"));
@@ -75,6 +88,7 @@ public class MP3_Controller implements Initializable {
 
         playlists.get(0).getSongByIndex(0).setStyle("-fx-text-fill: #34B743");
         playlists.get(0).getPlaylistButton().setStyle("-fx-text-fill: #34B743; -fx-font-weight: bold;");
+        // End of test part
 
         changeSong(); // It also initializes mediaPlayer
         refreshSongsListView();
@@ -133,6 +147,8 @@ public class MP3_Controller implements Initializable {
                return cell;
             }
         });
+
+        addDraggableNode(TopPane);
 
         //Changes song volume
         volumeSlider.valueProperty().addListener(new ChangeListener<Number>() {
@@ -382,4 +398,61 @@ public class MP3_Controller implements Initializable {
         timer.cancel();
     }
 
+    private void addDraggableNode(final Node node) {
+        node.setOnMousePressed(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent me) {
+                if (me.getButton() != MouseButton.MIDDLE) {
+                    initialX = me.getSceneX();
+                    initialY = me.getSceneY();
+                }
+            }
+        });
+
+        node.setOnMouseDragged(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent me) {
+                if (me.getButton() != MouseButton.MIDDLE) {
+                    node.getScene().getWindow().setX(me.getScreenX() - initialX);
+                    node.getScene().getWindow().setY(me.getScreenY() - initialY);
+                }
+            }
+        });
+    }
+
+    public void closeApp(ActionEvent event){
+        Platform.exit();
+        System.exit(0);
+    }
+
+    public void maximizeApp(ActionEvent event){
+        Stage stage = (Stage) maximizeButton.getScene().getWindow();
+        stage.setMaximized(true);
+
+        restoreDownButton.setDisable(false);
+        restoreDownButton.setVisible(true);
+        restoreDownImage.setVisible(true);
+
+        maximizeButton.setVisible(false);
+        maximizeButton.setDisable(true);
+        maximizeImage.setVisible(false);
+    }
+
+    public void minimizeApp(ActionEvent event){
+        Stage stage = (Stage) minimizeButton.getScene().getWindow();
+        stage.setIconified(true);
+    }
+
+    public void restoreDownAction(ActionEvent event){
+        Stage stage = (Stage) restoreDownButton.getScene().getWindow();
+        stage.setMaximized(false);
+
+        restoreDownButton.setDisable(true);
+        restoreDownButton.setVisible(false);
+        restoreDownImage.setVisible(false);
+
+        maximizeButton.setVisible(true);
+        maximizeButton.setDisable(false);
+        maximizeImage.setVisible(true);
+    }
 }

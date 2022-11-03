@@ -6,6 +6,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 
 import java.io.IOException;
@@ -17,13 +18,15 @@ public class MP3_Player extends Application {
         Scene scene = new Scene(fxmlLoader.load());
 
         stage.setTitle("Vanci");
-
-        stage.setMinHeight(600);
+        stage.setMinHeight(650);
         stage.setMinWidth(830);
+
+        stage.initStyle(StageStyle.UNDECORATED);
 
         stage.setScene(scene);
         stage.show();
 
+        Resizer.addResizeListener(stage);
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent windowEvent) {

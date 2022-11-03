@@ -14,19 +14,11 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="602.0" prefWidth="834.0" style="-fx-background-color: #0B0B0B;" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.project.mp3.MP3_Controller">
     <children>
-        <ScrollPane fx:id="scrollPane" hbarPolicy="NEVER" layoutX="157.0" prefHeight="502.0" prefWidth="679.0" style="-fx-background-color: #1D1C1C;" vbarPolicy="ALWAYS" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="157.0" AnchorPane.rightAnchor="-2.0" AnchorPane.topAnchor="0.0">
-            <content>
-                <JFXListView fx:id="songsListView" depth="1" fixedCellSize="40.0" prefHeight="500.0" prefWidth="701.0" style="-fx-background-color: #1D1C1C;" stylesheets="@styles/cell.css" verticalGap="20.0">
-                    <opaqueInsets>
-                        <Insets />
-                    </opaqueInsets>
-                </JFXListView>
-            </content>
-        </ScrollPane>
         <AnchorPane fx:id="bottomAnchorPane" layoutY="479.0" prefHeight="101.0" prefWidth="834.0" style="-fx-background-color: black;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
             <children>
                 <BorderPane fx:id="ddd" prefHeight="101.0" prefWidth="834.0" style="-fx-background-color: black;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -44,12 +36,12 @@
                     <left>
                         <Pane fx:id="leftPane" maxWidth="250.0" minHeight="100.0" minWidth="200.0" prefHeight="101.0" prefWidth="218.0" BorderPane.alignment="BOTTOM_LEFT">
                             <children>
-                                <ImageView fitHeight="58.0" fitWidth="87.0" layoutX="7.0" layoutY="29.0" pickOnBounds="true" preserveRatio="true" scaleX="0.85">
+                                <ImageView fitHeight="58.0" fitWidth="88.0" layoutX="7.0" layoutY="29.0" pickOnBounds="true" preserveRatio="true" scaleX="0.85">
                                     <image>
                                         <Image url="@images/images.jpg" />
                                     </image>
                                 </ImageView>
-                                <Label fx:id="songLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="64.0" layoutY="20.0" prefHeight="45.0" prefWidth="90.0" text="Music" textFill="#dddddd">
+                                <Label fx:id="songLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="70.0" layoutY="20.0" prefHeight="45.0" prefWidth="90.0" text="Music" textFill="#dddddd">
                                     <font>
                                         <Font name="System Bold" size="20.0" />
                                     </font>
@@ -101,17 +93,54 @@
                 </BorderPane>
             </children>
         </AnchorPane>
-      <JFXButton layoutX="19.0" layoutY="24.0" onAction="#addSong" prefHeight="38.0" prefWidth="116.0" ripplerFill="#787878" style="-fx-background-color: #343232; -fx-background-radius: 16;" text="Add" textFill="WHITE">
+      <JFXButton layoutX="19.0" layoutY="55.0" onAction="#addSong" prefHeight="38.0" prefWidth="116.0" ripplerFill="#787878" style="-fx-background-color: #343232; -fx-background-radius: 16;" text="Add" textFill="WHITE">
          <font>
             <Font name="System Bold" size="17.0" />
          </font>
       </JFXButton>
       <VBox fx:id="playlistsBox" layoutX="11.0" layoutY="260.0" prefHeight="226.0" prefWidth="116.0" AnchorPane.bottomAnchor="116.0" AnchorPane.leftAnchor="11.0" AnchorPane.topAnchor="260.0" />
       <Separator layoutX="16.0" layoutY="251.0" prefHeight="3.0" prefWidth="122.0" AnchorPane.leftAnchor="16.0" />
-      <JFXButton layoutX="19.0" layoutY="71.0" prefHeight="44.0" prefWidth="116.0" ripplerFill="#787878" style="-fx-background-color: #343232; -fx-background-radius: 17;" text="Create playlist" textFill="WHITE">
+      <JFXButton layoutX="19.0" layoutY="102.0" prefHeight="44.0" prefWidth="116.0" ripplerFill="#787878" style="-fx-background-color: #343232; -fx-background-radius: 17;" text="Create playlist" textFill="WHITE">
          <font>
             <Font name="System Bold" size="17.0" />
          </font>
       </JFXButton>
+        <ScrollPane fx:id="scrollPane" hbarPolicy="NEVER" layoutX="157.0" layoutY="32.0" prefHeight="470.0" prefWidth="678.0" style="-fx-background-color: #1D1C1C;" stylesheets="@styles/scrollPane.css" vbarPolicy="ALWAYS" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="157.0" AnchorPane.rightAnchor="-1.0" AnchorPane.topAnchor="32.0">
+            <content>
+                <JFXListView fx:id="songsListView" depth="1" fixedCellSize="40.0" prefHeight="476.0" prefWidth="678.0" style="-fx-background-color: #1D1C1C;" stylesheets="@styles/cell.css" verticalGap="20.0">
+                    <opaqueInsets>
+                        <Insets />
+                    </opaqueInsets>
+                </JFXListView>
+            </content>
+        </ScrollPane>
+      <BorderPane fx:id="TopPane" prefHeight="31.0" prefWidth="836.0" style="-fx-background-color: #2F2F2F;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <right>
+            <Pane prefHeight="36.0" prefWidth="188.0" BorderPane.alignment="CENTER">
+               <children>
+                  <JFXButton fx:id="closeButton" layoutX="146.0" layoutY="-2.0" onAction="#closeApp" prefHeight="33.0" prefWidth="46.0" ripplerFill="#c60e0e" stylesheets="@styles/closeButton.css" text=" " textFill="WHITE" />
+                  <JFXButton fx:id="maximizeButton" layoutX="98.0" layoutY="-1.0" onAction="#maximizeApp" prefHeight="32.0" prefWidth="46.0" ripplerFill="#868686" stylesheets="@styles/otherButtons.css" text=" " textFill="WHITE" />
+                  <JFXButton fx:id="minimizeButton" layoutX="55.0" layoutY="-5.0" onAction="#minimizeApp" prefHeight="36.0" prefWidth="41.0" ripplerFill="#868686" stylesheets="@styles/otherButtons.css" text=" " textFill="WHITE" />
+                  <ImageView fx:id="maximizeImage" disable="true" fitHeight="16.0" fitWidth="22.0" layoutX="111.0" layoutY="6.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@images/MaximizeButton.png" />
+                     </image>
+                  </ImageView>
+                  <ImageView disable="true" fitHeight="17.0" fitWidth="15.0" layoutX="159.0" layoutY="7.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@images/CloseButton.mp3.png" />
+                     </image>
+                  </ImageView>
+                  <Line disable="true" endX="735.3333129882812" endY="19.919116973876953" fill="WHITE" layoutX="-653.0" layoutY="-5.0" startX="722.6666870117188" startY="19.919116973876953" stroke="WHITE" strokeWidth="2.0" />
+                  <JFXButton fx:id="restoreDownButton" disable="true" layoutX="98.0" layoutY="-1.0" onAction="#restoreDownAction" prefHeight="32.0" prefWidth="46.0" ripplerFill="#868686" stylesheets="@styles/otherButtons.css" text=" " textFill="WHITE" visible="false" />
+                  <ImageView fx:id="restoreDownImage" disable="true" fitHeight="16.0" fitWidth="22.0" layoutX="111.0" layoutY="6.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                     <image>
+                        <Image url="@images/restoreDownButton.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </Pane>
+         </right>
+      </BorderPane>
     </children>
 </AnchorPane>
