@@ -1,6 +1,5 @@
 package com.project.mp3;
 
-import com.project.mp3.events.SongEvent;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -16,10 +15,13 @@ public class MP3_Player extends Application {
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(MP3_Player.class.getResource("MainMenu.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
-        stage.setTitle("Spotify2.0");
-        stage.setScene(scene);
+
+        stage.setTitle("Vanci");
+
         stage.setMinHeight(600);
         stage.setMinWidth(830);
+
+        stage.setScene(scene);
         stage.show();
 
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {

@@ -29,6 +29,7 @@ public class Playlist {
         songs = new ArrayList<Song>();
 
         playlistButton = new JFXButton(name);
+        setDefaultButtonStyle();
         playlistsBox.getChildren().add(playlistButton); // add button to VBox component
         playlistButton.onActionProperty().set(new EventHandler<ActionEvent>() {
             @Override
@@ -37,10 +38,10 @@ public class Playlist {
                     return;
 
                 var previousPlaylist = MP3_Controller.playlists.stream().filter(playlist -> playlist.getId() == MP3_Controller.selectedPlaylist).toList().get(0);
-                previousPlaylist.playlistButton.setStyle("-fx-text-fill: black");
+                previousPlaylist.playlistButton.setStyle(getDefaultButtonStyle());
 
                 MP3_Controller.selectedPlaylist = id;
-                playlistButton.setStyle("-fx-text-fill: green");
+                playlistButton.setStyle("-fx-text-fill: #34B743; -fx-font-weight: bold;");
                 // refreshes songsListView
                 songsListView.getItems().clear();
                 for (var song : songs)
@@ -76,6 +77,9 @@ public class Playlist {
     public int getSize(){
         return songs.size();
     }
+    public static String getDefaultButtonStyle(){
+        return "-fx-text-fill: white; -fx-font-weight: bold;";
+    }
 
     // Setters
     public void setName(String name) {
@@ -86,5 +90,8 @@ public class Playlist {
     }
     public static void setSongsListView(JFXListView<Song> songsListView) {
         Playlist.songsListView = songsListView;
+    }
+    public void setDefaultButtonStyle(){
+        playlistButton.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
     }
 }

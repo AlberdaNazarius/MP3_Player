@@ -73,7 +73,8 @@ public class MP3_Controller implements Initializable {
         playlists.get(0).addSong(new Song(files[1]));
         playlists.get(0).addSong(new Song(files[0]));
 
-        playlists.get(0).getSongByIndex(0).setStyle("-fx-background-color: green; -fx-text-fill: black");
+        playlists.get(0).getSongByIndex(0).setStyle("-fx-text-fill: #34B743");
+        playlists.get(0).getPlaylistButton().setStyle("-fx-text-fill: #34B743; -fx-font-weight: bold;");
 
         changeSong(); // It also initializes mediaPlayer
         refreshSongsListView();
@@ -88,14 +89,13 @@ public class MP3_Controller implements Initializable {
                     public void updateItem(Song item, boolean empty) {
                         super.updateItem(item, empty);
                         if (item != null) {
-                            setText(item.getName());
+                            setText(playlists.get(selectedPlaylist).getAllSongs().indexOf(item)+1 + "   " + item.getName());
                             setStyle(item.getStyle());
                         }
                         else{
                             setText("");
-                            setStyle("-fx-text-fill: black");
+                            setStyle("-fx-text-fill: white");
                         }
-
                     }
                 };
 
@@ -109,15 +109,14 @@ public class MP3_Controller implements Initializable {
                        }
 
                         assert previousCell != null;
-                        previousCell.setStyle("-fx-text-fill: black");
+                        previousCell.setStyle("-fx-text-fill: white");
 
                         selectedCell = cell;
-                        selectedCell.setStyle("-fx-background-color: green; -fx-text-fill: black");
-                        selectedSong.setStyle("-fx-background-color: green; -fx-text-fill: black");
+                        selectedCell.setStyle("-fx-background-color: #414341; -fx-text-fill: #34B743");
 
                         if (previousSong != null)
-                            previousSong.setStyle("-fx-text-fill: black");
-                        selectedSong.setStyle("-fx-background-color: green; -fx-text-fill: black");
+                            previousSong.setStyle("-fx-text-fill: white");
+                        selectedSong.setStyle("-fx-background-color: #414341; -fx-text-fill: #34B743");
 
                         songIndex = selectedMusicInSongsListView;
                         playNewSong();
@@ -125,8 +124,8 @@ public class MP3_Controller implements Initializable {
                 });
 
                cell.addEventFilter(SongEvent.SONG_CHANGED, songEvent -> {
-                    previousSong.setStyle("-fx-text-fill: black");
-                    selectedSong.setStyle("-fx-background-color: green; -fx-text-fill: black");
+                    previousSong.setStyle("-fx-text-fill: white");
+                    selectedSong.setStyle("-fx-text-fill: #34B743");
 
                     refreshSongsListView();
                });
