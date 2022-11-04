@@ -1,7 +1,8 @@
-package com.project.mp3;
+package com.project.mp3.components;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXListView;
+import com.project.mp3.MP3_Controller;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
@@ -55,6 +56,10 @@ public class Playlist {
     }
     public void addAllSongs(Song[] songs){
         this.songs.addAll(Arrays.asList(songs));
+    }
+
+    public void removeSongByIndex(int index){
+        songs.remove(index);
     }
 
     public Song getSongByIndex(int index){

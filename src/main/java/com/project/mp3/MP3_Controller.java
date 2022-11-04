@@ -1,6 +1,8 @@
 package com.project.mp3;
 
 import com.jfoenix.controls.JFXListView;
+import com.project.mp3.components.Playlist;
+import com.project.mp3.components.Song;
 import com.project.mp3.events.SongEvent;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -243,6 +245,11 @@ public class MP3_Controller implements Initializable {
                 playlists.get(selectedPlaylist).addSong(new Song(item));
         }
         refreshSongsListView();
+    }
+
+    public void removeSong(){
+          playlists.get(selectedPlaylist).removeSongByIndex(selectedMusicInSongsListView);
+          refreshSongsListView();
     }
 
     public void refreshSongsListView(){

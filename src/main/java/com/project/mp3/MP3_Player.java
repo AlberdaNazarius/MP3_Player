@@ -1,5 +1,6 @@
 package com.project.mp3;
 
+import com.project.mp3.auxiliaryClasses.Resizer;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;

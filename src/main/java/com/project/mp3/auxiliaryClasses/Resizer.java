@@ -1,4 +1,4 @@
-package com.project.mp3;
+package com.project.mp3.auxiliaryClasses;
 
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;

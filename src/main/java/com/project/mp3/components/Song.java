@@ -1,4 +1,4 @@
-package com.project.mp3;
+package com.project.mp3.components;
 
 import java.io.File;
 import java.util.TreeMap;
