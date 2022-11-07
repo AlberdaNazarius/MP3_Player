@@ -8,13 +8,14 @@ import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class Playlist {
+public class Playlist implements Serializable {
 
-    private static int newId;
-    private final int id;
+    private transient static int  newId;
+    private transient final int id;
 
     private String name;
     private ArrayList<Song> songs;
@@ -28,6 +29,33 @@ public class Playlist {
         this.id = newId++;
         this.name = name;
         songs = new ArrayList<Song>();
+
+        playlistButton = new JFXButton(name);
+        setDefaultButtonStyle();
+        playlistsBox.getChildren().add(playlistButton); // add button to VBox component
+        playlistButton.onActionProperty().set(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                if (MP3_Controller.selectedPlaylist == id)
+                    return;
+
+                var previousPlaylist = MP3_Controller.playlists.stream().filter(playlist -> playlist.getId() == MP3_Controller.selectedPlaylist).toList().get(0);
+                previousPlaylist.playlistButton.setStyle(getDefaultButtonStyle());
+
+                MP3_Controller.selectedPlaylist = id;
+                playlistButton.setStyle("-fx-text-fill: #34B743; -fx-font-weight: bold;");
+                // refreshes songsListView
+                songsListView.getItems().clear();
+                for (var song : songs)
+                    songsListView.getItems().add(song);
+            }
+        });
+    }
+
+    public Playlist(String name, ArrayList<Song> songs){
+        this.id = newId++;
+        this.name = name;
+        this.songs = songs;
 
         playlistButton = new JFXButton(name);
         setDefaultButtonStyle();
@@ -67,6 +95,19 @@ public class Playlist {
     }
     public ArrayList<Song> getAllSongs(){
         return songs;
+    }
+
+    // Realize serializable methods
+    @Serial
+    private void writeObject(ObjectOutputStream oos) throws IOException {
+        oos.writeUTF(name);
+        oos.writeObject(songs);
+    }
+
+    @Serial
+    private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
+        name = ois.readUTF();
+        songs = (ArrayList<Song>) ois.readObject();
     }
 
     // Getters

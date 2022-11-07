@@ -1,11 +1,16 @@
 package com.project.mp3.components;
 
 import java.io.File;
+import java.io.Serializable;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
-public class Song {
+public class Song implements Serializable {
 
-    private static final TreeMap<File, Integer> addedSongs = new TreeMap<>();
+    private static TreeMap<File, Integer> addedSongs = new TreeMap<>();
 
     private static int newId;
     private final int id;
@@ -35,6 +40,10 @@ public class Song {
         return addedSongs.containsKey(file);
     }
 
+    public static TreeMap<File, Integer> getAddedSongs(){
+        return addedSongs;
+    }
+
     public String getName() {
         return name;
     }
@@ -53,5 +62,17 @@ public class Song {
 
     public void setStyle(String style) {
         this.style = style;
+    }
+
+    public static void setAddedSongs(TreeMap<File, Integer> addedSongs) {
+        Song.addedSongs = addedSongs;
+    }
+
+    private static <T, E> Set<T> getKeysByValue(Map<T, E> map, E value) {
+        return map.entrySet()
+                .stream()
+                .filter(entry -> Objects.equals(entry.getValue(), value))
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
     }
 }

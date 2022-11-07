@@ -6,6 +6,7 @@ import com.project.mp3.components.Playlist;
 import com.project.mp3.components.Song;
 import com.project.mp3.events.SongEvent;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.*;
@@ -29,7 +30,7 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.Duration;
 
-import java.io.File;
+import java.io.*;
 import java.net.URL;
 import java.util.*;
 
@@ -67,6 +68,8 @@ public class MP3_Controller implements Initializable {
 
     public static ArrayList<Playlist> playlists;
     public static int selectedPlaylist;
+    private boolean isCreatingPlaylistActive;
+    private int playingPlaylistIndex;
 
     private Timer timer;
     private double currentSongTime;
@@ -77,27 +80,49 @@ public class MP3_Controller implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        File directory = new File("D:\\Work\\Univercity\\Term3\\CPP\\MP3\\src\\main\\resources\\com\\project\\mp3\\music");
-        File[] files = directory.listFiles();
+        // File directory = new File("D:\\Work\\Univercity\\Term3\\CPP\\MP3\\src\\main\\resources\\com\\project\\mp3\\music");
+        // File[] files = directory.listFiles();
 
         playlists = new ArrayList<>();
         Playlist.setPlaylistsBox(playlistsBox);
         Playlist.setSongsListView(songsListView);
 
         // Add some test playlists
-        playlists.add(new Playlist("Road To Home"));
-        playlists.add(new Playlist("Evening"));
-
-        playlists.get(0).addSong(new Song(files[0]));
-        playlists.get(0).addSong(new Song(files[1]));
-        playlists.get(0).addSong(new Song(files[0]));
-
-        playlists.get(0).getSongByIndex(0).setStyle("-fx-text-fill: #34B743");
-        playlists.get(0).getPlaylistButton().setStyle("-fx-text-fill: #34B743; -fx-font-weight: bold;");
+        //playlists.add(new Playlist("Road To Home"));
+        //playlists.add(new Playlist("Evening"));
+//
+        //playlists.get(0).addSong(new Song(files[0]));
+        //playlists.get(0).addSong(new Song(files[1]));
+        //playlists.get(0).addSong(new Song(files[0]));
+//
+        //playlists.get(0).getSongByIndex(0).setStyle("-fx-text-fill: #34B743");
+        //playlists.get(0).getPlaylistButton().setStyle("-fx-text-fill: #34B743; -fx-font-weight: bold;");
         // End of test part
 
-        changeSong(); // It also initializes mediaPlayer
-        refreshSongsListView();
+        // Read saved data
+        try {
+            Data data = new Data();
+            data = readObject();
+
+            songIndex = data.getSongIndex();
+            selectedPlaylist = data.getSelectedPlaylist();
+            Song.setAddedSongs(data.getAddedSongs());
+            for (var el : data.getSavedPlaylists())
+                playlists.add(new Playlist(el.getName(), el.getAllSongs()));
+
+            //playlists.get(selectedPlaylist).getSongByIndex(songIndex).setStyle("-fx-text-fill: #34B743");
+            playlists.get(selectedPlaylist).getPlaylistButton().setStyle("-fx-text-fill: #34B743; -fx-font-weight: bold;");
+            changeSong(); // It also initializes mediaPlayer
+            refreshSongsListView();
+        }
+        catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+
+
+        // Makes songsListView to be the height of it's items
+        songsListView.prefHeightProperty().bind(Bindings.size(songsListView.itemsProperty().get()).multiply(40));
 
         // Set customs items in songListView
         songsListView.setCellFactory(new Callback<ListView<Song>, ListCell<Song>>() {
@@ -179,22 +204,18 @@ public class MP3_Controller implements Initializable {
             }
         });
 
-        // Is used to set the value for progressSlider to run through whole song
-        mediaPlayer.setOnReady(new Runnable() {
-            @Override
-            public void run() {
-                Duration total = media.getDuration();
-                songProgressSlider.setMax(total.toSeconds());
-            }
-        });
+        if (mediaPlayer != null){
+            // Is used to set the value for progressSlider to run through whole song
+            mediaPlayer.setOnReady(new Runnable() {
+                @Override
+                public void run() {
+                    Duration total = media.getDuration();
+                    songProgressSlider.setMax(total.toSeconds());
+                }
+            });
+        }
 
-        // Makes songsListView fit size of scrollPane
-        scrollPane.heightProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
-                songsListView.setPrefHeight(t1.doubleValue());
-            }
-        });
+        // Makes songsListView width fit size of scrollPane
         scrollPane.widthProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
@@ -210,6 +231,30 @@ public class MP3_Controller implements Initializable {
                 selectedMusicInSongsListView = playlists.get(selectedPlaylist).getAllSongs().indexOf(currentSong);
             }
         });
+    }
+
+    private static void writeObject(Data savedData) throws IOException {
+        FileOutputStream f = new FileOutputStream(new File("savedSettings.bin"));
+        ObjectOutputStream o = new ObjectOutputStream(f);
+
+        // Write objects to file
+        o.writeObject(savedData);
+
+        o.close();
+        f.close();
+    }
+
+    private static Data readObject() throws IOException, ClassNotFoundException {
+        FileInputStream fi = new FileInputStream(new File("savedSettings.bin"));
+        ObjectInputStream oi = new ObjectInputStream(fi);
+
+        // Read objects
+        Data readData = (Data) oi.readObject();
+
+        oi.close();
+        fi.close();
+
+        return readData;
     }
 
     private ListCell<Song> getListCell(JFXListView<Song> listView, int cellIndex) {
@@ -232,28 +277,34 @@ public class MP3_Controller implements Initializable {
     }
 
     public void createPlaylist(){
-        JFXTextArea playlistNameTextField = new JFXTextArea();
+        if (!isCreatingPlaylistActive){
+            isCreatingPlaylistActive = true;
 
-        playlistNameTextField.getStylesheets().add(getClass().getResource("styles/playlistNameTextFieldStyle.css").toExternalForm());
-        playlistNameTextField.setMaxHeight(0);
-        playlistNameTextField.setFocusColor(Paint.valueOf("#34b743"));
+            JFXTextArea playlistNameTextField = new JFXTextArea();
 
-        playlistsBox.getChildren().add(playlistNameTextField);
+            playlistNameTextField.getStylesheets().add(getClass().getResource("styles/playlistNameTextFieldStyle.css").toExternalForm());
+            playlistNameTextField.setMaxHeight(0);
+            playlistNameTextField.setFocusColor(Paint.valueOf("#34b743"));
 
-        playlistNameTextField.setOnKeyReleased(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent keyEvent) {
-                if (keyEvent.getCode() == KeyCode.ENTER){
-                    playlistsBox.getChildren().remove(playlistNameTextField);
-                    var playlistName = playlistNameTextField.getText().substring(0, playlistNameTextField.getText().length()-1);
-                    if (playlistName.replaceAll("\\s","").chars().allMatch(Character::isLetter) && playlistName != ""){
-                        playlists.add(new Playlist(playlistName));
+            playlistsBox.getChildren().add(playlistNameTextField);
+
+            playlistNameTextField.setOnKeyReleased(new EventHandler<KeyEvent>() {
+                @Override
+                public void handle(KeyEvent keyEvent) {
+                    if (keyEvent.getCode() == KeyCode.ENTER){
+                        playlistsBox.getChildren().remove(playlistNameTextField);
+                        var playlistName = playlistNameTextField.getText().substring(0, playlistNameTextField.getText().length()-1).replaceAll("\\s","");
+
+                        if (playlistName.chars().allMatch(Character::isLetter) && playlistName != "")
+                            playlists.add(new Playlist(playlistName));
+                        else
+                            playlists.add(new Playlist("Name"));
+
+                        isCreatingPlaylistActive = false;
                     }
-                    else
-                        playlists.add(new Playlist("Name"));
                 }
-            }
-        });
+            });
+        }
     }
 
     public void addSong(){
@@ -294,6 +345,8 @@ public class MP3_Controller implements Initializable {
         //Changes visibility of components
         pauseButtonImage.setVisible(true);
         playButtonImage.setVisible(false);
+
+        playingPlaylistIndex = selectedPlaylist;
     }
 
     private void pauseMedia(){
@@ -450,7 +503,9 @@ public class MP3_Controller implements Initializable {
         });
     }
 
-    public void closeApp(ActionEvent event){
+    public void closeApp(ActionEvent event) throws IOException {
+        Data savedData = new Data(playlists, playingPlaylistIndex, Song.getAddedSongs(), songIndex);
+        writeObject(savedData);
         Platform.exit();
         System.exit(0);
     }

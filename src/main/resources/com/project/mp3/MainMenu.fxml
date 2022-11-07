@@ -95,7 +95,7 @@
             <Font name="System Bold" size="17.0" />
          </font>
       </JFXButton>
-        <ScrollPane fx:id="scrollPane" hbarPolicy="NEVER" layoutX="157.0" layoutY="32.0" prefHeight="470.0" prefWidth="678.0" style="-fx-background-color: #1D1C1C;" stylesheets="@styles/scrollPane.css" vbarPolicy="ALWAYS" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="157.0" AnchorPane.rightAnchor="-1.0" AnchorPane.topAnchor="32.0">
+        <ScrollPane fx:id="scrollPane" hbarPolicy="NEVER" layoutX="157.0" layoutY="32.0" prefHeight="378.0" prefWidth="678.0" style="-fx-background: #1D1C1C; -fx-background-color: #1D1C1C;" stylesheets="@styles/scrollPane.css" vbarPolicy="ALWAYS" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="157.0" AnchorPane.rightAnchor="-1.0" AnchorPane.topAnchor="32.0">
             <content>
                 <JFXListView fx:id="songsListView" depth="1" fixedCellSize="40.0" prefHeight="476.0" prefWidth="678.0" style="-fx-background-color: #1D1C1C;" stylesheets="@styles/cell.css" verticalGap="20.0">
                     <opaqueInsets>
