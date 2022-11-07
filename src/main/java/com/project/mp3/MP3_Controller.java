@@ -1,6 +1,7 @@
 package com.project.mp3;
 
 import com.jfoenix.controls.JFXListView;
+import com.jfoenix.controls.JFXTextArea;
 import com.project.mp3.components.Playlist;
 import com.project.mp3.components.Song;
 import com.project.mp3.events.SongEvent;
@@ -14,12 +15,15 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.skin.VirtualFlow;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.paint.Paint;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
@@ -99,8 +103,7 @@ public class MP3_Controller implements Initializable {
         songsListView.setCellFactory(new Callback<ListView<Song>, ListCell<Song>>() {
             @Override
             public ListCell<Song> call(ListView<Song> songListView) {
-                final ListCell<Song> cell = new ListCell<Song>()
-                {
+                final ListCell<Song> cell = new ListCell<Song>() {
                     @Override
                     public void updateItem(Song item, boolean empty) {
                         super.updateItem(item, empty);
@@ -228,9 +231,29 @@ public class MP3_Controller implements Initializable {
         return virtualFlow.getCell(cellIndex);
     }
 
-    public void createPlaylist(String name){ //// Make
-        playlists.add(new Playlist(name));
+    public void createPlaylist(){
+        JFXTextArea playlistNameTextField = new JFXTextArea();
 
+        playlistNameTextField.getStylesheets().add(getClass().getResource("styles/playlistNameTextFieldStyle.css").toExternalForm());
+        playlistNameTextField.setMaxHeight(0);
+        playlistNameTextField.setFocusColor(Paint.valueOf("#34b743"));
+
+        playlistsBox.getChildren().add(playlistNameTextField);
+
+        playlistNameTextField.setOnKeyReleased(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent keyEvent) {
+                if (keyEvent.getCode() == KeyCode.ENTER){
+                    playlistsBox.getChildren().remove(playlistNameTextField);
+                    var playlistName = playlistNameTextField.getText().substring(0, playlistNameTextField.getText().length()-1);
+                    if (playlistName.replaceAll("\\s","").chars().allMatch(Character::isLetter) && playlistName != ""){
+                        playlists.add(new Playlist(playlistName));
+                    }
+                    else
+                        playlists.add(new Playlist("Name"));
+                }
+            }
+        });
     }
 
     public void addSong(){
@@ -248,8 +271,8 @@ public class MP3_Controller implements Initializable {
     }
 
     public void removeSong(){
-          playlists.get(selectedPlaylist).removeSongByIndex(selectedMusicInSongsListView);
-          refreshSongsListView();
+        playlists.get(selectedPlaylist).removeSongByIndex(selectedMusicInSongsListView);
+        refreshSongsListView();
     }
 
     public void refreshSongsListView(){
