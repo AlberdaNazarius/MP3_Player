@@ -12,12 +12,15 @@ public class Data implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
+
     private ArrayList<Playlist> savedPlaylists;
     private TreeMap<File, Integer> addedSongs;
-    private int songIndex;
     private  int selectedPlaylist;
+    private int songIndex;
 
+    private double musicVolume;
 
+    // Constructors
     public Data() {
     }
 
@@ -41,5 +44,14 @@ public class Data implements Serializable {
     }
     public int getSelectedPlaylist() {
         return selectedPlaylist;
+    }
+
+    public double getMusicVolume() {
+        return musicVolume;
+    }
+
+    // Setters
+    public void setMusicVolume(double musicVolume) {
+        this.musicVolume = musicVolume;
     }
 }

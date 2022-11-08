@@ -1,5 +1,4 @@
 .jfx-slider-style {
-
 }
 
 // This make some aesthetic bug
@@ -15,5 +14,5 @@
 
 .jfx-slider-style .animated-thumb{
 	-fx-background-color: transparent;
-	-fx-background-text: none;
+
 }

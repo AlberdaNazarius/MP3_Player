@@ -1,12 +1,14 @@
 package com.project.mp3;
 
 import com.jfoenix.controls.JFXListView;
+import com.jfoenix.controls.JFXSlider;
 import com.jfoenix.controls.JFXTextArea;
 import com.project.mp3.components.Playlist;
 import com.project.mp3.components.Song;
 import com.project.mp3.events.SongEvent;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.StringBinding;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.*;
@@ -33,13 +35,14 @@ import javafx.util.Duration;
 import java.io.*;
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.Callable;
 
 public class MP3_Controller implements Initializable {
 
     @FXML
     private Label songLabel, currentTimeLabel, endTimeLabel;
     @FXML
-    private Slider volumeSlider, songProgressSlider;
+    private JFXSlider volumeSlider, songProgressSlider;
     @FXML
     private JFXListView<Song> songsListView;
     @FXML
@@ -80,24 +83,9 @@ public class MP3_Controller implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        // File directory = new File("D:\\Work\\Univercity\\Term3\\CPP\\MP3\\src\\main\\resources\\com\\project\\mp3\\music");
-        // File[] files = directory.listFiles();
-
         playlists = new ArrayList<>();
         Playlist.setPlaylistsBox(playlistsBox);
         Playlist.setSongsListView(songsListView);
-
-        // Add some test playlists
-        //playlists.add(new Playlist("Road To Home"));
-        //playlists.add(new Playlist("Evening"));
-//
-        //playlists.get(0).addSong(new Song(files[0]));
-        //playlists.get(0).addSong(new Song(files[1]));
-        //playlists.get(0).addSong(new Song(files[0]));
-//
-        //playlists.get(0).getSongByIndex(0).setStyle("-fx-text-fill: #34B743");
-        //playlists.get(0).getPlaylistButton().setStyle("-fx-text-fill: #34B743; -fx-font-weight: bold;");
-        // End of test part
 
         // Read saved data
         try {
@@ -106,25 +94,38 @@ public class MP3_Controller implements Initializable {
 
             songIndex = data.getSongIndex();
             selectedPlaylist = data.getSelectedPlaylist();
+
             Song.setAddedSongs(data.getAddedSongs());
             for (var el : data.getSavedPlaylists())
                 playlists.add(new Playlist(el.getName(), el.getAllSongs()));
 
-            //playlists.get(selectedPlaylist).getSongByIndex(songIndex).setStyle("-fx-text-fill: #34B743");
             playlists.get(selectedPlaylist).getPlaylistButton().setStyle("-fx-text-fill: #34B743; -fx-font-weight: bold;");
             changeSong(); // It also initializes mediaPlayer
             refreshSongsListView();
+
+            volumeSlider.setValue(data.getMusicVolume());
         }
         catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
 
-
-
         // Makes songsListView to be the height of it's items
         songsListView.prefHeightProperty().bind(Bindings.size(songsListView.itemsProperty().get()).multiply(40));
 
-        // Set customs items in songListView
+        // Remove displaying value of songProgressSlider above that progress bar
+        songProgressSlider.setValueFactory(new Callback<JFXSlider, StringBinding>() {
+            @Override
+            public StringBinding call(JFXSlider arg0) {
+                return Bindings.createStringBinding(new Callable<String>(){
+                    @Override
+                    public String call() throws Exception {
+                        return "";
+                    }
+                }, songProgressSlider.valueProperty());
+            }
+        });
+
+        // Set custom cells in songListView
         songsListView.setCellFactory(new Callback<ListView<Song>, ListCell<Song>>() {
             @Override
             public ListCell<Song> call(ListView<Song> songListView) {
@@ -234,7 +235,7 @@ public class MP3_Controller implements Initializable {
     }
 
     private static void writeObject(Data savedData) throws IOException {
-        FileOutputStream f = new FileOutputStream(new File("savedSettings.bin"));
+        FileOutputStream f = new FileOutputStream(new File("savedData.bin"));
         ObjectOutputStream o = new ObjectOutputStream(f);
 
         // Write objects to file
@@ -245,7 +246,7 @@ public class MP3_Controller implements Initializable {
     }
 
     private static Data readObject() throws IOException, ClassNotFoundException {
-        FileInputStream fi = new FileInputStream(new File("savedSettings.bin"));
+        FileInputStream fi = new FileInputStream(new File("savedData.bin"));
         ObjectInputStream oi = new ObjectInputStream(fi);
 
         // Read objects
@@ -505,6 +506,7 @@ public class MP3_Controller implements Initializable {
 
     public void closeApp(ActionEvent event) throws IOException {
         Data savedData = new Data(playlists, playingPlaylistIndex, Song.getAddedSongs(), songIndex);
+        savedData.setMusicVolume(volumeSlider.getValue());
         writeObject(savedData);
         Platform.exit();
         System.exit(0);
